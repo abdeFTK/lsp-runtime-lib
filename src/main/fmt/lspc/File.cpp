@@ -92,7 +92,7 @@ namespace lsp
 
     #if defined(PLATFORM_WINDOWS)
             fhandle_t fd = CreateFileW(
-                    path->get_utf16(), GENERIC_READ,
+                    path->get_native_utf16(), GENERIC_READ,
                     FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
                     NULL, OPEN_EXISTING,
                     FILE_ATTRIBUTE_NORMAL | FILE_FLAG_RANDOM_ACCESS,
@@ -171,7 +171,7 @@ namespace lsp
 
     #if defined(PLATFORM_WINDOWS)
             fhandle_t fd = CreateFileW(
-                    path->get_utf16(), GENERIC_READ | GENERIC_WRITE,
+                    path->get_native_utf16(), GENERIC_READ | GENERIC_WRITE,
                     FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
                     NULL, CREATE_ALWAYS,
                     FILE_ATTRIBUTE_NORMAL | FILE_FLAG_RANDOM_ACCESS,

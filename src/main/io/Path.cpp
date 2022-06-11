@@ -1079,7 +1079,7 @@ namespace lsp
             if (sPath.length() <= 0)
                 return false;
 #if defined(PLATFORM_WINDOWS)
-            return !PathIsRelativeW(reinterpret_cast<LPCWSTR>(sPath.get_utf16()));
+            return !PathIsRelativeW(reinterpret_cast<LPCWSTR>(sPath.get_native_utf16()));
 #else
             return (sPath.first() == FILE_SEPARATOR_C);
 #endif
@@ -1090,7 +1090,7 @@ namespace lsp
             if (sPath.length() <= 0)
                 return true;
 #if defined(PLATFORM_WINDOWS)
-            return ::PathIsRelativeW(reinterpret_cast<LPCWSTR>(sPath.get_utf16()));
+            return ::PathIsRelativeW(reinterpret_cast<LPCWSTR>(sPath.get_native_utf16()));
 #else
             return (sPath.first() != FILE_SEPARATOR_C);
 #endif
@@ -1158,7 +1158,7 @@ namespace lsp
         bool Path::is_root() const
         {
 #if defined(PLATFORM_WINDOWS)
-            return ::PathIsRootW(reinterpret_cast<LPCWSTR>(sPath.get_utf16()));
+            return ::PathIsRootW(reinterpret_cast<LPCWSTR>(sPath.get_native_utf16()));
 #else
             return (sPath.length() == 1) &&
                     (sPath.first() == FILE_SEPARATOR_C);

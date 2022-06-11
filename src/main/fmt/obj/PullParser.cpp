@@ -19,6 +19,7 @@
  * along with lsp-runtime-lib. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <locale.h>
 #include <lsp-plug.in/fmt/obj/PullParser.h>
 
 #include <lsp-plug.in/common/debug.h>

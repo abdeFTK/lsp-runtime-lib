@@ -97,7 +97,7 @@ namespace lsp
 
             // Call API for FindFirst
             status_t pending    = STATUS_OK;
-            HANDLE dh           = ::FindFirstFileW(mask.as_string()->get_utf16(), &sData);
+            HANDLE dh           = ::FindFirstFileW(mask.as_string()->get_native_utf16(), &sData);
             if (dh == INVALID_HANDLE_VALUE)
             {
                 DWORD err = ::GetLastError();
@@ -168,7 +168,7 @@ namespace lsp
 
             // Call API for FindFirst
             status_t pending    = STATUS_OK;
-            HANDLE dh   = ::FindFirstFileW(mask.as_string()->get_utf16(), &sData);
+            HANDLE dh   = ::FindFirstFileW(mask.as_string()->get_native_utf16(), &sData);
             if (dh == INVALID_HANDLE_VALUE)
             {
                 DWORD err = ::GetLastError();
@@ -214,8 +214,7 @@ namespace lsp
             else if (hDir == FAKE_HANDLE)
                 return set_error(STATUS_BAD_STATE);
 
-            // Set result
-            if (!out.set_utf16(sData.cFileName))
+            if (!out.set_native_utf16(sData.cFileName))
                 return set_error(STATUS_NO_MEM);
 
             // Perform next iteration
@@ -304,9 +303,23 @@ namespace lsp
             else if (hDir == FAKE_HANDLE)
                 return set_error(STATUS_BAD_STATE);
 
-            // Set result
-            if (!out.set_utf16(sData.cFileName))
+            if (!out.set_native_utf16(sData.cFileName))
                 return set_error(STATUS_NO_MEM);
+                
+            // Decode file state
+            // Decode file type
+            attr->type      = fattr_t::FT_REGULAR;
+            if (sData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+                attr->type      = fattr_t::FT_DIRECTORY;
+            else if (sData.dwFileAttributes & FILE_ATTRIBUTE_DEVICE)
+                attr->type      = fattr_t::FT_BLOCK;
+
+            attr->blk_size  = 4096;
+            attr->size      = (wsize_t(sData.nFileSizeHigh) << 32) | sData.nFileSizeLow;
+            attr->inode     = 0;
+            attr->ctime     = ((wsize_t(sData.ftCreationTime.dwHighDateTime) << 32) | sData.ftCreationTime.dwLowDateTime) / 10000;
+            attr->mtime     = ((wsize_t(sData.ftLastWriteTime.dwHighDateTime) << 32) | sData.ftLastWriteTime.dwLowDateTime) / 10000;
+            attr->atime     = ((wsize_t(sData.ftLastAccessTime.dwHighDateTime) << 32) | sData.ftLastAccessTime.dwLowDateTime) / 10000;
 
             // Perform next iteration
             if (!::FindNextFileW(hDir, &sData))
@@ -323,21 +336,6 @@ namespace lsp
                         break;
                 }
             }
-
-            // Decode file state
-            // Decode file type
-            attr->type      = fattr_t::FT_REGULAR;
-            if (sData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-                attr->type      = fattr_t::FT_DIRECTORY;
-            else if (sData.dwFileAttributes & FILE_ATTRIBUTE_DEVICE)
-                attr->type      = fattr_t::FT_BLOCK;
-
-            attr->blk_size  = 4096;
-            attr->size      = (wsize_t(sData.nFileSizeHigh) << 32) | sData.nFileSizeLow;
-            attr->inode     = 0;
-            attr->ctime     = ((wsize_t(sData.ftCreationTime.dwHighDateTime) << 32) | sData.ftCreationTime.dwLowDateTime) / 10000;
-            attr->mtime     = ((wsize_t(sData.ftLastWriteTime.dwHighDateTime) << 32) | sData.ftLastWriteTime.dwLowDateTime) / 10000;
-            attr->atime     = ((wsize_t(sData.ftLastAccessTime.dwHighDateTime) << 32) | sData.ftLastAccessTime.dwLowDateTime) / 10000;
 #else
             // Read directory
             errno = 0;
@@ -599,7 +597,7 @@ namespace lsp
                 return STATUS_BAD_ARGUMENTS;
 
 #ifdef PLATFORM_WINDOWS
-            const WCHAR *xp = path->get_utf16();
+            const WCHAR *xp = path->get_native_utf16();
             if (::CreateDirectoryW(xp, NULL))
                 return STATUS_OK;
 
@@ -676,7 +674,7 @@ namespace lsp
                 return STATUS_BAD_ARGUMENTS;
 
 #ifdef PLATFORM_WINDOWS
-            if (::RemoveDirectoryW(path->get_utf16()))
+            if (::RemoveDirectoryW(path->get_native_utf16()))
                 return STATUS_OK;
 
             // Analyze error code
@@ -745,7 +743,7 @@ namespace lsp
                 return STATUS_UNKNOWN_ERR;
             }
 
-            status_t res = (path->set_utf16(buf, len)) ? STATUS_OK : STATUS_NO_MEM;
+            status_t res = (path->set_native_utf16(buf, len)) ? STATUS_OK : STATUS_NO_MEM;
             ::free(buf);
             return res;
 #else

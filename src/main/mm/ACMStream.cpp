@@ -105,7 +105,7 @@ namespace lsp
                 }
                 s->ptag->id     = ftd->dwFormatTag;
                 s->ptag->fdw    = ftd->fdwSupport;
-                s->ptag->name.set_utf16(ftd->szFormatTag);
+                s->ptag->name.set_native_utf16(ftd->szFormatTag);
 
                 // Query formats
                 acm_query_formats(s);
@@ -140,11 +140,11 @@ namespace lsp
                 return TRUE;
             }
             s->pdrv->drv_id = hadid;
-            s->pdrv->short_name.set_utf16(dd->szShortName);
-            s->pdrv->full_name.set_utf16(dd->szLongName);
-            s->pdrv->copyright.set_utf16(dd->szCopyright);
-            s->pdrv->license.set_utf16(dd->szLicensing);
-            s->pdrv->features.set_utf16(dd->szFeatures);
+            s->pdrv->short_name.set_native_utf16(dd->szShortName);
+            s->pdrv->full_name.set_native_utf16(dd->szLongName);
+            s->pdrv->copyright.set_native_utf16(dd->szCopyright);
+            s->pdrv->license.set_native_utf16(dd->szLicensing);
+            s->pdrv->features.set_native_utf16(dd->szFeatures);
 
             // Query format metrics
             s->req_sz           = 0;

@@ -19,12 +19,13 @@
  * along with lsp-runtime-lib. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <locale.h>
 #include <lsp-plug.in/fmt/config/PullParser.h>
 #include <lsp-plug.in/io/InFileStream.h>
 #include <lsp-plug.in/io/InStringSequence.h>
 #include <lsp-plug.in/io/InSequence.h>
 #include <lsp-plug.in/stdlib/math.h>
-#include <locale.h>
+
 #include <errno.h>
 #include <stdlib.h>
 #include <limits.h>

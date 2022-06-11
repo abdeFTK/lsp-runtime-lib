@@ -57,7 +57,7 @@ namespace lsp
                 return nLastError = STATUS_OPENED;
 
             #ifdef PLATFORM_WINDOWS
-                const WCHAR *str  = path->get_utf16();
+                const WCHAR *str  = path->get_native_utf16();
                 if (str == NULL)
                     return STATUS_NO_MEM;
                 HMODULE handle  = ::LoadLibraryW(str);
@@ -178,7 +178,7 @@ namespace lsp
                 return STATUS_NOT_FOUND;
             }
 
-            if (!path->set_utf16(xpath))
+            if (!path->set_native_utf16(xpath))
             {
                 ::free(path);
                 return STATUS_NO_MEM;

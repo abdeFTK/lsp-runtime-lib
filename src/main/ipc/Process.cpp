@@ -814,7 +814,7 @@ namespace lsp
 
             // Start the child process.
             if( !::CreateProcessW(
-                sCommand.get_utf16(),   // Module name (use command line)
+                sCommand.get_native_utf16(),   // Module name (use command line)
                 wargv,                  // Command line
                 NULL,                   // Process handle not inheritable
                 NULL,                   // Thread handle not inheritable
@@ -1481,7 +1481,7 @@ namespace lsp
                 size_t len  = wcslen(item);
 
                 // Fetch environment variable
-                if (!k.set_utf16(item, len))
+                if (!k.set_native_utf16(item, len))
                 {
                     destroy_env(&env);
                     return STATUS_NO_MEM;

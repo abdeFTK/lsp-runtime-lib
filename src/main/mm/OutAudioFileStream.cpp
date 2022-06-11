@@ -308,7 +308,7 @@ namespace lsp
                 {
                     pFormat             = acm->in_format();
                     ssize_t sfmt        = decode_sample_format(pFormat);
-                    if (fmt > 0)
+                    if (sfmt > 0)
                     {
                         // Now open MMIO with specified output format
                         if ((res = mmio->open(path, acm->out_format(), fmt->frames)) == STATUS_OK)

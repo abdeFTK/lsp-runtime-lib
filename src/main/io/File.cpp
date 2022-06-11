@@ -167,7 +167,7 @@ namespace lsp
             #ifdef PLATFORM_WINDOWS
                 WIN32_FIND_DATAW hfi;
 
-                HANDLE dh   = ::FindFirstFileW(path->get_utf16(), &hfi);
+                HANDLE dh   = ::FindFirstFileW(path->get_native_utf16(), &hfi);
                 if (dh == INVALID_HANDLE_VALUE)
                 {
                     DWORD err = ::GetLastError();
@@ -309,7 +309,7 @@ namespace lsp
             #ifdef PLATFORM_WINDOWS
                 WIN32_FIND_DATAW hfi;
 
-                HANDLE dh   = ::FindFirstFileW(path->get_utf16(), &hfi);
+                HANDLE dh   = ::FindFirstFileW(path->get_native_utf16(), &hfi);
                 if (dh == INVALID_HANDLE_VALUE)
                 {
                     DWORD err = ::GetLastError();
@@ -403,7 +403,7 @@ namespace lsp
                 return STATUS_BAD_ARGUMENTS;
 
 #ifdef PLATFORM_WINDOWS
-            if (::DeleteFileW(path->get_utf16()))
+            if (::DeleteFileW(path->get_native_utf16()))
                 return STATUS_OK;
 
             // Analyze error code
@@ -551,7 +551,7 @@ namespace lsp
                 return STATUS_BAD_ARGUMENTS;
 
 #ifdef PLATFORM_WINDOWS
-            if (::MoveFileExW(from->get_utf16(), to->get_utf16(), MOVEFILE_REPLACE_EXISTING))
+            if (::MoveFileExW(from->get_native_utf16(), to->get_native_utf16(), MOVEFILE_REPLACE_EXISTING))
                 return STATUS_OK;
 
             // Analyze error code

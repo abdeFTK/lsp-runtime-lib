@@ -55,7 +55,7 @@ namespace lsp
             nFrames = frames;
 
             // Open MMIO file
-            hMMIO   = ::mmioOpenW(const_cast<lsp_utf16_t *>(path->get_utf16()), NULL, MMIO_ALLOCBUF | MMIO_READWRITE | MMIO_CREATE);
+            hMMIO   = ::mmioOpenW(const_cast<lsp_utf16_t *>(path->get_native_utf16()), NULL, MMIO_ALLOCBUF | MMIO_READWRITE | MMIO_CREATE);
             if (hMMIO == NULL)
                 return close(STATUS_IO_ERROR);
 

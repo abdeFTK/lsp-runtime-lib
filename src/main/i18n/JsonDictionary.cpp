@@ -97,7 +97,7 @@ namespace lsp
             json::Parser p;
             JsonDictionary tmp;
 
-            status_t res = p.wrap(is, json::JSON_VERSION5, WRAP_NONE);
+            status_t res = p.wrap(is, json::JSON_VERSION5, WRAP_NONE, "UTF-8");
             if (res == STATUS_OK)
                 res = tmp.parse_json(&p);
 

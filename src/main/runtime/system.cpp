@@ -45,7 +45,7 @@ namespace lsp
                 return STATUS_BAD_ARGUMENTS;
 
 #ifdef PLATFORM_WINDOWS
-            const lsp_utf16_t *nname = name->get_utf16();
+            const lsp_utf16_t *nname = name->get_native_utf16();
             if (nname == NULL)
                 return STATUS_NO_MEM;
 
@@ -69,7 +69,7 @@ namespace lsp
                 return STATUS_UNKNOWN_ERR;
             }
 
-            bool res = dst->set_utf16(buf, bufsize);
+            bool res = dst->set_native_utf16(buf, bufsize);
             ::free(buf);
             return (res) ? STATUS_OK : STATUS_NO_MEM;
 #else
@@ -106,13 +106,13 @@ namespace lsp
         status_t set_env_var(const LSPString *name, const LSPString *value)
         {
 #ifdef PLATFORM_WINDOWS
-            const lsp_utf16_t *nname = name->get_utf16();
+            const lsp_utf16_t *nname = name->get_native_utf16();
             if (nname == NULL)
                 return STATUS_NO_MEM;
 
             if (value != NULL)
             {
-                const lsp_utf16_t *nvalue = value->get_utf16();
+                const lsp_utf16_t *nvalue = value->get_native_utf16();
                 if (nvalue == NULL)
                     return STATUS_NO_MEM;
                 if (::SetEnvironmentVariableW(nname, nvalue))
@@ -474,7 +474,7 @@ namespace lsp
             ::ShellExecuteW(
                 NULL,               // Not associated with window
                 L"open",            // Open hyperlink
-                url->get_utf16(),   // The file to execute
+                url->get_native_utf16(),   // The file to execute
                 NULL,               // Parameters
                 NULL,               // Directory
                 SW_SHOWNORMAL       // Show command

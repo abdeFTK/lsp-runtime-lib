@@ -1736,6 +1736,40 @@ namespace lsp
         return true;
     }
 
+    bool LSPString::set_native_utf16(const lsp_utf16_t *s)
+    {
+        int nb = wcslen(s);
+
+        return set_native_utf16(s, nb);
+    }
+
+#if defined(PLATFORM_WINDOWS)
+    bool LSPString::set_native_utf16(const lsp_utf16_t *s, size_t n)
+    {
+        LSPString   tmp;
+
+        int wnb = n;
+
+        int nb = WideCharToMultiByte(CP_UTF8, 0, s, wnb, NULL, 0,NULL,NULL);
+        char buffer[nb+4];
+        WideCharToMultiByte(CP_UTF8, 0, s, wnb, buffer, nb,NULL,NULL);
+        buffer[nb] = '\0';
+        buffer[nb+1] = '\0';
+        buffer[nb+2] = '\0';
+        buffer[nb+3] = '\0';
+
+        tmp.set_utf8(buffer);
+
+        tmp.swap(this);
+        return true;
+    }
+#else
+    bool LSPString::set_native_utf16(const lsp_utf16_t *s, size_t n)
+    {
+        return set_utf16(s, n);
+    }
+#endif
+
 #if defined(PLATFORM_WINDOWS)
     bool LSPString::set_native(const char *s, size_t n, const char *charset)
     {
@@ -1931,6 +1965,48 @@ namespace lsp
 
         return reinterpret_cast<lsp_utf16_t *>(pTemp->pData);
     }
+
+#if defined(PLATFORM_WINDOWS)
+    const lsp_utf16_t *LSPString::get_native_utf16(ssize_t first, ssize_t last) const
+    {
+        XSAFE_TRANS(first, nLength, NULL);
+        XSAFE_TRANS(last, nLength, NULL);
+        if (first > last)
+            return NULL;
+
+        if (pTemp != NULL)
+            pTemp->nOffset      = 0;
+
+        const char* nativeBuf = get_utf8(first, last);
+        if (nativeBuf == NULL) {
+            return L"";
+        }
+        ssize_t length = (last - first) * sizeof(WCHAR);
+        // Convert to wide string
+        int nb = MultiByteToWideChar(CP_UTF8, 0, nativeBuf, length, NULL, 0);
+        int newSize = nb+4;
+        WCHAR wbuf[newSize];
+        MultiByteToWideChar(CP_UTF8, 0, nativeBuf, length, wbuf, nb);
+        wbuf[nb] = L'\0';
+        wbuf[nb + 1] = L'\0';
+        wbuf[nb + 2] = L'\0';
+        wbuf[nb + 3] = L'\0';
+
+        pTemp->nOffset      = 0;
+        pTemp->nLength      = 0;
+
+        bool res = append_temp(reinterpret_cast<char *>(wbuf), newSize * sizeof(lsp_utf16_t));
+
+        return res ? reinterpret_cast<lsp_utf16_t *>(pTemp->pData) : NULL;
+    }
+#else
+
+    const lsp_utf16_t *LSPString::get_native_utf16(ssize_t first, ssize_t last) const
+    {
+        return get_utf16(first, last);
+    }
+
+#endif
 
     const char *LSPString::get_ascii(ssize_t first, ssize_t last) const
     {
@@ -2154,10 +2230,10 @@ namespace lsp
         if (native == NULL)
             return NULL;
 
-        size_t offset = (pTemp != NULL) ? pTemp->nOffset : 0;
-        char *ptr = (native != NULL) ? reinterpret_cast<char *>(lsp::memdup(native, offset)) : NULL;
+        size_t length = (pTemp != NULL) ? pTemp->nLength : 0;
+        char *ptr = (native != NULL) ? reinterpret_cast<char *>(lsp::memdup(native, length)) : NULL;
         if (bytes != NULL)
-            *bytes = (ptr != NULL) ? offset : 0;
+            *bytes = (ptr != NULL) ? length : 0;
         return ptr;
     }
 

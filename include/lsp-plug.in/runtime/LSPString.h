@@ -283,6 +283,9 @@ namespace lsp
             bool set_utf16(const lsp_utf16_t *s, size_t n);
             bool set_utf16(const lsp_utf16_t *s);
 
+            bool set_native_utf16(const lsp_utf16_t *s, size_t n);
+            bool set_native_utf16(const lsp_utf16_t *s);
+
             bool set_ascii(const char *s, size_t n);
             inline bool set_ascii(const char *s) { return set_ascii(s, ::strlen(s)); };
 
@@ -297,6 +300,10 @@ namespace lsp
             const lsp_utf16_t *get_utf16(ssize_t first, ssize_t last) const;
             inline const lsp_utf16_t *get_utf16(ssize_t first) const { return get_utf16(first, nLength); };
             const lsp_utf16_t *get_utf16() const { return get_utf16(0, nLength); };
+
+            const lsp_utf16_t *get_native_utf16(ssize_t first, ssize_t last) const;
+            inline const lsp_utf16_t *get_native_utf16(ssize_t first) const { return get_native_utf16(first, nLength); };
+            const lsp_utf16_t* get_native_utf16() const { return get_native_utf16(0, nLength); };
 
             const char *get_ascii(ssize_t first, ssize_t last) const;
             inline const char *get_ascii(ssize_t first) const { return get_ascii(first, nLength); };

@@ -79,7 +79,7 @@ namespace lsp
             nFrames         = -1;
             bSeekable       = false;
 
-            if ((hMMIO = ::mmioOpenW(const_cast<WCHAR *>(path->get_utf16()), NULL, MMIO_ALLOCBUF | MMIO_READ)) == NULL)
+            if ((hMMIO = ::mmioOpenW(const_cast<WCHAR *>(path->get_native_utf16()), NULL, MMIO_ALLOCBUF | MMIO_READ)) == NULL)
                 return STATUS_PERMISSION_DENIED;
 
             // Lookup for RIFF chunk
@@ -184,6 +184,13 @@ namespace lsp
                 {
                     if (LE_TO_CPU(wfe.wBitsPerSample) != sizeof(f32_t)*8)
                         return close(STATUS_UNSUPPORTED_FORMAT);
+                    size_t fsize    = LE_TO_CPU(wfe.wBitsPerSample) * LE_TO_CPU(wfe.nChannels);
+                    if (fsize & 0x07)   // not multiple of 8?
+                        return close(STATUS_UNSUPPORTED_FORMAT);
+                    fsize >>= 3;        // divide by 8
+                    nFrames     = ckData.cksize / fsize;
+                    if ((nFrames * fsize) != ckData.cksize)
+                        return close(STATUS_CORRUPTED_FILE);
                 }
             }
 
